@@ -104,3 +104,22 @@ fs.readFile('成绩.txt','utf8',(err,dataStr)=>{
 
 `__dirname`:代表当前文件所处的目录，`./`代表的是终端运行脚本时所在的当前目录，所以`./`容易出现bug，而`__dirname`不会出现bug。
 
+# path路径模块
+
+## 引入path模块
+
+`const path = require('path');`
+
+## 路径拼接
+
+* `path.join()`:把多个路径片段拼接为完整的路径字符串
+
+**今后涉及路径拼接的操作，都要使用path.join()方法进行处理。**不要使用"+"进行字符串的拼接：`fs.readFile(path.join(__dirname, './files/1.txt'), 'utf8', function(err, dataStr){...});`
+
+## 获取路径中的文件名
+
+* `path.basename(path, 文件扩展名（可选）);`：返回路径最后一部分，如果不提供扩展名，直接返回完整的文件名+拓展名；如果提供拓展名，那么只返回文件名无拓展名
+
+## 获取路径中的文件扩展名
+
+* `path.extname();`
