@@ -123,3 +123,7 @@ fs.readFile('成绩.txt','utf8',(err,dataStr)=>{
 ## 获取路径中的文件扩展名
 
 * `path.extname();`
+
+# path+fs综合案例
+
+我们把index.html文件拆分成index.css、index.js、index.html，并将拆分出来的三个文件存放到clock目录中。
