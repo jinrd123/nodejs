@@ -202,3 +202,10 @@ server.on的回调函数可以接收到一个req对象，通过这个对象可�
 
 js模块的exports对象，和module.exports初始状态（没有修改module.exports与exports对象指向的时候）指向的是同一个对象，也就是`module.exports === exports`，直接操作exports对象，操作更方便。**但是一旦修改了exports或者module.exports的指向，那么exports与module.exports就不一定是同一个对象了，require返回的永远是module.exports**。
 
+## CommonJS模块化规范
+
+node.js模块化遵循CommonJS模块化规范：
+
+* 每个模块内部，module对象代表当前模块
+* module.exports是模块对外的接口
+* require加载某个模块，其实就是加载模块的module.exports。
