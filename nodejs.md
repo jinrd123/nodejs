@@ -317,3 +317,9 @@ npm i 安装的包都会出现在package.json的dependencies配置项中，这�
 我们可以用`express.static('存放静态资源的文件夹路径')`创建一个静态资源服务器，说白了就是创建一个服务器，托管这个文件夹下的文件（静态资源），把`express.static()` 传递给 `app.use()`作为参数，就完成了静态资源的托管。
 
 现在我们就可以通过网址访问静态资源文件夹下的所有文件了，**但是请求路径中不包括静态资源文件夹,直接在ip地址后面加上文件夹下的文件名即可**。比如：public文件夹下有index.html文件，`app.use(express.static('public'))`，我们若想在网络上访问这个资源，请求地址应为：`http://localhost:3000/index.html`。
+
+## nodemon
+
+使用nodemon可以在修改js代码之后不用手动重启项目就可以自动重启项目
+
+`npm i nodemon`安装之后，在启动项目的时候用`nodemon app.js(项目名)`启动项目，这样就可以监听代码修改自动重启项目。
