@@ -247,7 +247,7 @@ npm规定，项目**根目录**中，必须提供一个叫做package.json的包�
 
 上传代码时，不上传node_modules文件夹（加入.gitignore），执行npm install安装依赖包时就是根据package.json进行安装的。
 
-新建项目时，执行一次`npm init -y`即可创建package.json文件。
+**新建项目时，执行一次`npm init -y`即可创建package.json文件。之后就可以正常进行npm i 了，不然可能npm i 无效。**
 
 ## 卸载包
 
@@ -294,3 +294,18 @@ npm i 安装的包都会出现在package.json的dependencies配置项中，这�
   * 加载失败
 * 第三方模块（不是内置，也没有路径），Node.js会从当前模块的父目录开始找node_modules文件夹下的第三方模块，找不到就再移动到上一层目录，找node_modules下的第三方模块。
 * 目录作为模块....
+
+# Express框架
+
+是对于node.js中http模块的封装，用来创建服务器
+
+对于前端，两种常见服务器：
+
+* Web网站服务器：专门提供Web网页资源的服务器
+* API接口服务器：专门对外提供API接口的服务器
+
+使用Express，可以方便快速的创建Web网站服务器和API接口服务器。
+
+## 安装express
+
+新建文件夹Express_study，初始化项目：npm init；然后npm i express@4.17.1
