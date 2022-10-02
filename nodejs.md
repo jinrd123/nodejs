@@ -196,4 +196,9 @@ server.on的回调函数可以接收到一个req对象，通过这个对象可�
 
 ## module对象
 
-每一个js文件（每一个模块）在node环境下都有一个module对象，里面存放模块相关信息，require方法返回的就是引入模块的module对象的exports（module的子对象）部分。
+每一个js文件（每一个模块）在node环境下都有一个module对象，里面存放模块相关信息，require方法返回的就是引入模块的module对象的exports（module的子对象）。
+
+## exports对象
+
+js模块的exports对象，和module.exports初始状态（没有修改module.exports与exports对象指向的时候）指向的是同一个对象，也就是`module.exports === exports`，直接操作exports对象，操作更方便。**但是一旦修改了exports或者module.exports的指向，那么exports与module.exports就不一定是同一个对象了，require返回的永远是module.exports**。
+
