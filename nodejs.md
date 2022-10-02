@@ -209,3 +209,9 @@ node.js模块化遵循CommonJS模块化规范：
 * 每个模块内部，module对象代表当前模块
 * module.exports是模块对外的接口
 * require加载某个模块，其实就是加载模块的module.exports。
+
+# npm与包
+
+包就是第三方模块
+
+npm（Node Package Manager，简称npm包管理工具）,是npm,Inc公司提供的，在Node.js安装之时npm已经被集成安装到了电脑上。
