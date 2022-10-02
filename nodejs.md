@@ -215,3 +215,67 @@ node.js模块化遵循CommonJS模块化规范：
 包就是第三方模块
 
 npm（Node Package Manager，简称npm包管理工具）,是npm,Inc公司提供的，在Node.js安装之时npm已经被集成安装到了电脑上。
+
+## 安装包：
+
+`npm install 包名`可简写为`npm i 包名`
+
+初次安装包之后，项目文件夹下会生成node_modules文件夹和package-lock.json配置文件（npm包管理工具会自动维护）
+
+* node_modules：存放已经安装到项目的包
+* pack-lock.json配置文件：记录node_modules目录下每一个包的下载信息，例如包名，版本号，下载地址等
+
+## 安装指定版本的包：
+
+`npm i 包名@版本号`
+
+## 包的语义化版本规范
+
+包的版本号以“点分十进制”形式进行定义。总共三位数字,例如2.24.0
+
+其中每一位数字代表的含义如下：
+
+* 第一位数字：**大版本**，发生底层重构后更新版本数字
+* 第二位数字：**功能版本**，大版本不变，功能更新时更新版本数字
+* 第三位数字：**Bug修复版本**，修复bug后更新版本数字
+
+版本号提升规则：前面的版本号增长后，后面的版本号归零
+
+## 包管理配置文件
+
+npm规定，项目**根目录**中，必须提供一个叫做package.json的包管理配置文件。记录项目的配置信息（用到哪些包、项目名、项目版本号...）
+
+上传代码时，不上传node_modules文件夹（加入.gitignore），执行npm install安装依赖包时就是根据package.json进行安装的。
+
+新建项目时，执行一次`npm init -y`即可创建package.json文件。
+
+## 卸载包
+
+`npm uninstall 包名`
+
+## 安装的包只在开发阶段使用
+
+项目包分为两类：
+
+* 开发依赖包（被记录到package.json的devDependencies配置项中，只在开发期间使用）
+* 核心依赖包（被记录在package.json的dependencies配置项中，项目开发和上线都会使用）
+
+npm i 安装的包都会出现在package.json的dependencies配置项中，这是不管项目开发还是上线都会一直使用的包，如果某些包只在开发阶段使用：`npm i -D 包名`/`npm i 包名 -D`（参数位置不重要）,这样安装的包会出现在package.json的devDependencies配置项中。
+
+## 下包速度慢的问题
+
+下包默认从国外npm官方服务器下包，所以慢，淘宝提供了一个npm镜像服务器，也就是国外npm服务器的克隆版
+
+`npm config get registry`：查看我们电脑npm下包的服务器
+
+`npm config set registry="https://registry.npm.taobao.org/"`：修改npm下包服务器地址
+
+## 安装全局包
+
+`npm i -g 包名`
+
+全局包自动安装在....（C盘某个文件夹）下，只有工具类的包（提供一些好用的命令）才有必要全局安装。
+
+## 发布包
+
+走偏了吧，我是来学node的，不是来开发包的。
