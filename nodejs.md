@@ -309,3 +309,11 @@ npm i 安装的包都会出现在package.json的dependencies配置项中，这�
 ## 安装express
 
 新建文件夹Express_study，初始化项目：npm init；然后npm i express@4.17.1
+
+## 托管静态资源
+
+所谓静态资源，就是不与数据库，不通过网络交互信息的资源，比如写死的html页面、css文件。所谓托管静态资源说白了就是把一些死文件放到网上，比如把一个静态网页挂到网上。
+
+我们可以用`express.static('存放静态资源的文件夹路径')`创建一个静态资源服务器，说白了就是创建一个服务器，托管这个文件夹下的文件（静态资源），把`express.static()` 传递给 `app.use()`作为参数，就完成了静态资源的托管。
+
+现在我们就可以通过网址访问静态资源文件夹下的所有文件了，**但是请求路径中不包括静态资源文件夹,直接在ip地址后面加上文件夹下的文件名即可**。比如：public文件夹下有index.html文件，`app.use(express.static('public'))`，我们若想在网络上访问这个资源，请求地址应为：`http://localhost:3000/index.html`。
