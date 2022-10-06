@@ -371,3 +371,27 @@ app.get('/', mw1, mw2, (req, res) => {res.send(...)})
 app.get('/', [mw1, mw2], (req, res) => {res.send(...)})
 ~~~
 
+### 中间件的分类
+
+首先根据中间件挂载在app身上还是express.Router()身上可以分为：
+
+* 应用（app）级别的中间件，通过以下方式挂载的都属于应用级别中间件：
+  * app.use()
+  * app.get()
+  * app.post()
+* 路由级别的中间件，通过以下方式挂载在路由上的属于路由级别的中间件：
+  * router.use()
+  * router.get()
+  * router.post()
+
+单独一类：**错误级别的中间件**，处理路由时如果发生错误，防止服务器崩溃，可以使用错误级别的中间件进行错误处理，（发生错误之后进入错误级别中间件处理函数）
+
+**错误级别的中间件有四个形参，分别是err，req，res，next，且必须注册在所有路由之后**。
+
+根据中间件来源又可以分：
+
+* Express内置中间件
+  * express.static()：快速托管静态资源的内置中间件
+  * express.json()：解析JSON格式的请求体数据的中间件（请求体中携带了JSON格式的数据，我们服务器端通过req.body进行访问的时候，如果不提前配置express.json，req.body默认等于undefined）
+  * express.urlencoded()：解析URL-encoded格式的请求体数据，作用与express.json相似。
+* 第三方中间件：`npm install 中间件`，`require`导入中间件，`app.use()`注册并使用中间件 。
