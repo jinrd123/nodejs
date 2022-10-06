@@ -411,3 +411,30 @@ cors注意事项
 
 * cors在**服务器端**进行配置，客户端浏览器无需做任何额外的配置，只要服务器端配置了cors，客户端浏览器就可以请求开启了cors的接口。
 * cors在浏览器中有兼容性（只有支持XMLHttpRequest Level2的浏览器才能正常访问开启了cors的服务器接口）
+
+### cors相关的三个响应头(响应！)
+
+我们服务器配置了cors之后，可以通过设置以下三个响应头来更具体的配置cors（具体允许哪些ip进行跨域资源共享、允许哪些默认以外的请求头、允许哪些默认以外的请求方式）
+
+* `Access-Control-Allow-Origin`：决定我们的服务器允许跨域只针对指定的客户端ip，而不响应其它客户端。Access-Control-Allow-Origin的值除了是具体的ip地址以外，还可以是`*`，表示响应任何客户端的请求。
+
+~~~js
+//对http://localhost:80发送的请求进行响应
+res.setHeader('Access-Control-Allow-Origin', 'http://localhost:80');
+~~~
+
+* `Access-Control-Allow-Headers`：允许客户端使用指定的请求头（不在默认允许客户端使用的9个请求头之外的请求头）。因为cors仅支持客户端向服务器发送9个指定的请求头，如果使用了9个请求头之外的请求头，请求就会失败。
+
+~~~js
+//允许客户端使用额外的两个请求头
+res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Custom-Header');
+~~~
+
+* `Access-Control-Allow-Methods`：默认情况下，cors仅支持客户端发起GET、POST、HEAD请求，但如果客户端希望通过PUT、DELETE等方式请求服务器，就需要配置Access-Control-Allow-Methods。
+
+~~~js
+res.setHeader('Access-Control-Allow-Methods', 'POST, GET, DELETE, HEAD')
+//允许所有的http请求方法
+res.setHeader('Access-Control-Allow-Methods', "*");
+~~~
+
