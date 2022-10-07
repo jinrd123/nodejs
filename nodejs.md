@@ -582,3 +582,119 @@ select count(*) as total from users where status=0
 select username as uname, password as upwd from users
 ~~~
 
+# express项目中操作MySQL数据库
+
+安装mysql模块
+
+`npm install mysql`
+
+服务器js文件内：
+
+~~~js
+//导入mysql模块
+const mysql = require('mysql');
+//建立与MySQL数据库的连接——创建数据库连接对象db
+const db = mysql.createPool({
+    host: '127.0.0.1', //mysql服务器运行的ip地址
+    user: 'root', //登录数据库的账号（root账号是安装时系统给的）
+    password: '761214Jl', 
+    database: 'my_db_01' //MySQL账号下有若干数据库，指定要连接的具体的数据库
+})
+~~~
+
+使用db数据库连接对象去操作数据执行sql语句并且返回sql结果：
+
+## 查询操作
+
+~~~js
+//查询users表中的所有数据：
+db.query('select * from users', (err, results) => {
+    //查询失败
+	if(err) return console.log(err.message);
+    //查询成功
+    /*
+    	select查询语句的返回结果是一个数组
+    	每一条数据都作为数组中的一个对象
+    */
+    console.log(results);
+})
+~~~
+
+## 插入操作
+
+~~~js
+//要插入到users表中的数据对象
+const user = { username: 'lgh', password: '1231223' };
+//待执行的sql语句，其中英文?表示占位符，在使用db.query时，第一个参数是含有占位符的SQL语句，第二个参数就是一个数组，数组项依次对应?，第三个参数才是回调函数
+const sqlStr = 'insert into users (username, password) values (?, ?)'
+//使用数组的形式，依次为?指定具体的内容
+db.query(sqlStr, [user.username, user.password], (err, results) => {
+    if(err) return console.log(err.message);//插入失败
+    /*
+    	insert into插入语句返回的results是一个对象，
+    	可以通过results.affectedRows属性判断是否插入成功
+    */
+    if(results.affectedRows === 1) {
+        console.log('插入数据成功')
+    }
+})
+~~~
+
+向表中插入数据时，如果数据对象的每个属性和数据表的属性一一对应，可以使用如下快捷插入：
+
+~~~js
+const user = { username: 'lgh', password: '1231223' };
+
+//insert into 表名 后面直接跟set和占位符，然后db.query的第二个参数直接放数据对象
+const sqlStr = 'insert into users set ?'
+//第二个参数直接用数据对象user
+db.query(sqlStr, user, (err, results) => {
+    if(err) return console.log(err.message);//插入失败
+    if(results.affectedRows === 1) {
+        console.log('插入数据成功')
+    }
+})
+~~~
+
+## 更新操作
+
+~~~js
+const user = { id: 7, username: 'lgh', password: '1231223' };
+const sqlStr = 'update users set username=?, password=? where id=?'
+db.query(sqlStr, [user.username, user.password, user.id], (err, results) => {
+    if(err) return console.log(err.message);//更新失败
+    if(results.affectedRows === 1) {
+        console.log('更新数据成功')
+    }
+})
+~~~
+
+更新表数据时，如果数据对象的每个属性和数据表的字段一一对应，可以快捷更新（类似于快捷插入）
+
+~~~js
+const user = { id: 7, username: 'lgh', password: '1231223' };
+
+const sqlStr = 'update users set ? where id=?'
+//第二个参数直接用数据对象user
+db.query(sqlStr, user, (err, results) => {
+    if(err) return console.log(err.message);//失败
+    if(results.affectedRows === 1) {
+        console.log('更新数据成功')
+    }
+})
+~~~
+
+## 删除操作
+
+~~~js
+const sqlStr = 'delete from user where id=?'
+//在db.query为占位符指定具体值的时候，如果SQL语句中只有一个占位符，db.query中可以省略数组括号
+db.query(sqlStr, 7, (err,results) => {
+    if(err) return console.log(err.message);
+    if(results.affectsRows === 1) {
+        console.log('删除数据成功');
+    }
+})
+~~~
+
+使用delete语句，会把真正的数据从数据库表中彻底删除，为了防止错误操作引起数据丢失，保险起见，推荐使用**删除标记**的形式，来模拟删除动作。所谓删除标记就是给表增加一个状态字段（比如status，0表示正常，1表示被删除）,然后用update语句修改status模拟删除的动作。
