@@ -567,3 +567,18 @@ select * from users order by status asc
 select * from users order by status desc, username asc
 ~~~
 
+### count(*)以及as关键字的使用
+
+`count(*)`：返回查询结果总数据条数
+
+`select count(*) from 表名`
+
+`as`：为查询的列设置别名
+
+~~~sql
+-- 不设置as别名的话查询结果集的列名就是count(*)
+select count(*) as total from users where status=0
+
+select username as uname, password as upwd from users
+~~~
+
