@@ -524,7 +524,7 @@ update users set password='123', status=1 where id=2
 delete from users where id=7
 ~~~
 
-### where字句
+### where子句
 
 删、改、查中使用where子句限定选择的范围
 
@@ -545,5 +545,25 @@ where子句中可以用`or`和`and`连接多个条件
 ~~~sql
 -- 使用and查询所有status为0并且id小于3的用户
 select * from users where status=0 and id<3
+~~~
+
+### order by 子句
+
+根据指定的列对结果集进行排序
+
+`order by 列名 asc/desc`，如果不指定asc或者desc，默认是asc升序排列
+
+~~~sql
+-- 对 users 表中的数据，按照 status 字段进行升序排列
+select * from users order by status
+-- 等价于
+select * from users order by status asc
+~~~
+
+#### 多重排序
+
+~~~sql
+-- 对 users 表中的数据，先按照 status 字段进行降序排列，再按照 username 进行升序排序
+select * from users order by status desc, username asc
 ~~~
 
