@@ -448,3 +448,102 @@ res.setHeader('Access-Control-Allow-Methods', "*");
 ## 编写jsonp接口，利用jsonp解决跨域问题
 
 所谓jsonp解决跨域，其实就是利用<script src="url">标签的特性，script访问某个url地址的资源并没有发送ajax请求，也就是说没进行网络请求就可以和服务器进行通信（或者说这种请求不受同源策略的限制），但是<script src="url">这样从服务器请求来的文本信息客户端会当作js脚本进行执行。所以我们就让服务器返回一个js执行语句，这样客户端接收到这个语句之后直接开始执行。一般服务器返回的这个js语句就是一个函数调用语句，调用的时候传递参数，参数就是服务器想传递给客户端的真实数据。所以我们客户端用script标签的url“发请求”的时候应该做好执行服务器传来的脚本的准备：准备好与脚本里函数调用语句相对应的函数，当然url里要通过query参数把客户端定义的函数名告诉服务器，方便服务器拼接脚本字符串。例如：`<script src="http://127.0.0.1/api/jsonp?callback=jsonpCallback"></script>`，并且我们客户端定义好一个函数`jsonpCallback(data) {处理数据}`。服务器的`/api/jsonp`路由就返回一个字符串`jsonpCallback(想传给客户端的真实数据)`。客户端的<script>标签接收到这个字符串之后，就当作js脚本进行执行，然后自动进入了我们客户端事先定义好的jsopCallback函数进行处理数据。
+
+# MySQL数据库
+
+开发相关软件
+
+* MySQL Server：专门用来提供数据存储和服务的软件
+* MySQL Workbench：可视化的MySQL管理工具，用来方便的操作存储在MySQL Server里的数据。
+
+## 创建数据库和表
+
+1. 使用workbench，输入密码连接本地数据库服务
+2. 创建一个新数据库
+3. 创建数据表
+   1. 右键Tables——Create Table
+   2. 建表选项卡：填写表名，表描述，字段设计（DataType数据类型：int整数、varchar(len)字符串、tinyint(1)布尔值）（字段的特殊标识：PK(Primary Key)主键，唯一标识、NN(Not Null)值不允许为空、UQ(Unique)值为一、AI(Auto Increment)值自动增长）
+   3. Apply
+4. 表中添加数据
+   1. 右键表——Select Rows-Limit1000
+   2. 手动填写数据即可，id（选择了AI的字段）不用填写，自动递增维护，status（设置了Default的字段）不用写，直接等于默认值
+
+## 使用SQL管理数据库
+
+### sql概念
+
+英文全称Structured Query Language，结构化查询语言，是专门用来访问和处理数据库的编程语言（适用于关系型数据库）。
+
+sql语句对大小写不敏感
+
+### select
+
+查询表中的数据
+
+`select 属性名/* from 表名`
+
+~~~sql
+-- 从 users 表中把username和password对应的数据查询出来
+select username, password from users
+-- 通过 * 把 users 表中所有数据查询出来
+select * from users
+~~~
+
+### insert
+
+向数据表中插入新的数据行
+
+`insert into 表名 (列1, 列2,...) values (值1, 值2,...)`
+
+~~~sql
+-- 向 users 表中，插入一条username为tom，password为0123的用户数据
+insert into users (username, password) values ('tom', '0123')
+~~~
+
+### update
+
+修改指定行的某些属性值
+
+`update 表名 set 列名称 = 新值[, 列名称2 = 新值2] where 列名称 = 某值`
+
+~~~sql
+-- 把 users 表中 id 为 7 的用户的密码修改为 8888888
+update users set password=8888888 where id=7
+-- 把 users 表中 id 为 2 的用户密码和用户状态分别修改为123和1
+update users set password='123', status=1 where id=2
+~~~
+
+### delete
+
+删除指定的行
+
+`delete from 表名 where 列名 = 值`
+
+~~~sql
+-- 删除 users 表中id为7的用户信息
+delete from users where id=7
+~~~
+
+### where字句
+
+删、改、查中使用where子句限定选择的范围
+
+~~~sql
+select 列名称 from 表名称 where 列名称 运算符 值
+update 表名称 set 列=新值 where 列 运算符 值
+delete from 表名称 where 列 运算符 值
+~~~
+
+#### 运算符：
+
+=、!=、>、<、>=、<=、between、like
+
+#### 连接词：
+
+where子句中可以用`or`和`and`连接多个条件
+
+~~~sql
+-- 使用and查询所有status为0并且id小于3的用户
+select * from users where status=0 and id<3
+~~~
+
