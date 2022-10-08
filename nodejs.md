@@ -804,3 +804,109 @@ app.use(session({
 **req.session对于同一浏览器发送的请求之间共享，不同浏览器创建的req.session之间相互独立。**详见测试代码
 
 `req.session.destroy()`：清空服务器保存的session信息。
+
+## JWT认证机制
+
+通俗理解一下session认证机制的逻辑：
+
+1. 用户请求
+2. 服务器验证成功后，比如用户登录成功，在服务器端存储用户的信息，比如用户是否是vip之类的，然后只把sessionId这种非用户信息通过响应头传给客户端，客户端通过cookie保存
+3. 客户端再次请求（携带cookie），在服务器里通过cookie（sessionId）寻找用户信息存储地址，然后根据用户的信息作出对应的响应（比如用户是一个vip，我们就给用户vip待遇）
+
+总结就是我们怕把用户信息传给客户端然后客户端乱改伪造，所以服务器只传类似于sessionId的东西给客户端，客户端通过cookie保存，拿着这个cookie到了服务器再去找用户信息。
+
+### Session认证机制的局限性
+
+* 需要结合cookie才能实现
+* cookie默认不支持跨域访问（我们浏览器上存储了cookie，但是再次进行跨域请求的时候，并不会携带cookie）。所以需要做很多额外的配置才能实现跨域的Session认证
+
+所以当前端需要跨域请求后端接口的时候，不推荐使用Session认证机制，推荐使用JWT认证机制
+
+**那什么是JWT认证机制**
+
+JWT（英文全称：JSON Web Token）是目前最流行的**跨域认证解决方案**。
+
+和Session认证机制其实就一点不同，我们服务器第一次接收到身份验证请求的时候，并不开辟空间存储session，而是直接把用户信息对象进行加密，生成所谓的token字符串，直接发给客户端，客户端再次发请求时，通过请求头的Authorization字段，携带token发请求。然后服务器把token字符串进行解密，还原成用户信息对象，根据用户信息做出响应。
+
+### JWT三个组成部分
+
+* Header（头部）
+* Payload（有效荷载）
+* Signature（签名）
+
+三者之间使用英文"."分隔：`Header.Payload.Signature`
+
+其中Payload才是加密用户信息产生的字符串，Header和Signature是安全相关的部分，只是为了增加token的安全性。
+
+### JWT的使用方式
+
+客户端收到服务器的JWT之后，通常会把JWT存储在localStorage或者sessionStorage中，此后客户端的请求都带上JWT字符串。一般的做法是把JWT放在http请求头的Authorization字段中，格式如下：
+
+`Authorization: Bearer <token>`
+
+### express中使用JWT
+
+`npm install jsonwebtoken express-jwt`
+
+* jsonwebtoken用于生成JWT字符串
+* express-jwt用于将JWT字符串解析还原成JSON对象
+
+定义secret密钥：为了防止JWT在网络传输中被破解，我们自定义一个密钥字符串在加密和解密时使用
+
+`const secretKey = '761214Jl'`
+
+#### 登陆成功后生成JWT字符串
+
+~~~js
+app.post('/api/login', function(req, res) {
+    //省略登录失败情况下的逻辑
+    //用户登陆成功之后，生成JWT字符串，通过token属性相应给客户端
+    res.send({
+        status: 200,
+        massage: '登陆成功',
+        //调用 jwt.sign() 生成 JWT 字符串，三个参数分别是：用户信息对象、加密密钥、配置对象（expiresIn有效时限）
+        token: jwt.sign({ username: 'jrd' }, secretKey, { expiresIn: '30s' })
+    })
+})
+~~~
+
+#### 将JWT字符串还原为JSON对象
+
+客户端每次在访问那些有权限的接口（所谓权限就是服务器需要客户端携带token进行请求）的时候，需要通过请求头中的Authorization字段，将Token字符串发送到服务器进行身份验证。
+
+此时服务器通过express-jwt这个中间件，将客户端请求头中携带的token解析还原称JSON对象
+
+~~~js
+//app.use()注册中间件
+//expressJWT({secret:secretKey})就是用来解析Token的中间件
+//.unless({ path: [/^\/api\//]})用来指定哪些接口不需要访问权限
+app.use(expressJWT({secret:secretKey}).unless({ path: [/^\/api\//]}))
+~~~
+
+配置了这个中间件之后，在那些有权限的接口中（也就是客户端请求时携带了token的接口），使用`req.user`对象来访问从JWT中解析出来的用户信息
+
+~~~js
+app.get('/admin/getinfo', function(req, res) {
+    //只要用户携带了token并且被成功解析,req就有user这个属性
+    console.log(req.user)
+})
+~~~
+
+#### 捕获解析JWT失败后产生的错误
+
+当使用express-jwt解析Token字符串时，如果客户端发送过来的Token字符串过期或者不合法，会产生一个解析失败的错误，导致项目崩溃。我们需要配置错误中间件捕获错误并进行处理。
+
+~~~js
+app.use((err, req, res, next) => {
+    // 根据err.name判断是否为token解析失败的错误
+    if(err.name === 'UnauthorizedError') {
+        return res.send({ status: 401, message: '无效的token' })
+    }
+    //其它原因导致的错误
+    res.send({
+        status: 500,
+        message: '未知错误'
+    })
+})
+~~~
+
