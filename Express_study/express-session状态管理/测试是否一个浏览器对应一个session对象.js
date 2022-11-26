@@ -7,6 +7,7 @@ const app = express();
 //配置session中间件
 app.use(session({
     secret: '761214Jl',
+    cookie: { maxAge: 10000 }, //cookie的有效时长，10s
     resave: false,
     saveUninitialized: true
 }))
@@ -14,6 +15,8 @@ app.use(session({
 app.get('/api/login', (req, res) => {
     //输出session对象的user属性
     console.log(req.session.user);
+    console.log(req.session);
+    console.log(`当前的唯一会话ID，藏在cookie里的value：${ req.sessionID }`);
     //修改session对象的uesr属性为jrd
     req.session.user = 'jrd';
     res.send('成功请求');
